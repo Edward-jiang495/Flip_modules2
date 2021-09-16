@@ -41,14 +41,19 @@ class AudioModel {
         }
     }
     
-    
-    // You must call this when you want the audio to start being handled by our model
     func play(){
         if let manager = self.audioManager{
             manager.play()
+            manager.inputBlock = self.handleMicrophone
         }
     }
     
+    func pause() {
+        if let manager = self.audioManager {
+            manager.pause()
+            manager.inputBlock = nil
+        }
+    }
     
     //==========================================
     // MARK: Private Properties
