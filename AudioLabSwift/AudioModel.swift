@@ -17,6 +17,7 @@ class AudioModel {
     // the user can access these arrays at any time and plot them if they like
     var timeData:[Float]
     var fftData:[Float]
+    var twentyData:[Float]
     
     // MARK: Public Methods
     init(buffer_size:Int) {
@@ -24,6 +25,7 @@ class AudioModel {
         // anything not lazily instatntiated should be allocated here
         timeData = Array.init(repeating: 0.0, count: BUFFER_SIZE)
         fftData = Array.init(repeating: 0.0, count: BUFFER_SIZE/2)
+        twentyData = Array.init(repeating: 0.0, count: 20)
     }
     
     // public function for starting processing of microphone data
@@ -43,8 +45,8 @@ class AudioModel {
     
     func play(){
         if let manager = self.audioManager{
-            manager.play()
             manager.inputBlock = self.handleMicrophone
+            manager.play()
         }
     }
     
@@ -89,11 +91,21 @@ class AudioModel {
             fftHelper!.performForwardFFT(withData: &timeData,
                                          andCopydBMagnitudeToBuffer: &fftData)
             
-            // at this point, we have saved the data to the arrays:
-            //   timeData: the raw audio samples
-            //   fftData:  the FFT of those same samples
-            // the user can now use these variables however they like
+            let windowSize = self.fftData.count / 20
+            for index in 0...19 {
+                var sum:Float = 0
+                var count:Float = 0
+                
+                for fttIndex in (index * windowSize)...((index + 1) * windowSize)
+                {
+                    sum += self.fftData[fttIndex]
+                    count += 1
+                }
+                
+                self.twentyData[index] = sum / count
+            }
             
+            print(self.twentyData)
         }
     }
     
@@ -105,6 +117,4 @@ class AudioModel {
         // copy samples from the microphone into circular buffer
         self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
     }
-    
-    
 }

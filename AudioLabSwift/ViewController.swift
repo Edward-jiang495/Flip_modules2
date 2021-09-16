@@ -36,8 +36,12 @@ class ViewController: UIViewController {
                         numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE/2)
         
         graph?.addGraph(withName: "time",
-            shouldNormalize: false,
-            numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE)
+                        shouldNormalize: false,
+                        numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE)
+        
+        graph?.addGraph(withName: "twenty",
+                        shouldNormalize: false,
+                        numPointsInGraph: 20)
         
         // start up the audio model here, querying microphone
         audio.startMicrophoneProcessing(withFps: 10)
@@ -75,11 +79,10 @@ class ViewController: UIViewController {
             forKey: "time"
         )
         
-        
-        
+        self.graph?.updateGraph(
+            data: self.audio.twentyData,
+            forKey: "twenty"
+        )
     }
-    
-    
-
 }
 
