@@ -39,12 +39,8 @@ class ViewController: UIViewController {
             shouldNormalize: false,
             numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE)
         
-        
-        
         // start up the audio model here, querying microphone
         audio.startMicrophoneProcessing(withFps: 10)
-
-        audio.play()
         
         // run the loop for updating the graph peridocially
         Timer.scheduledTimer(timeInterval: 0.05, target: self,
@@ -52,6 +48,18 @@ class ViewController: UIViewController {
             userInfo: nil,
             repeats: true)
        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        audio.play()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        audio.pause()
     }
     
     // periodically, update the graph with refreshed FFT Data
