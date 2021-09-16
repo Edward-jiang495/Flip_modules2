@@ -1,5 +1,10 @@
 # Flip_modules2
 
+## Team Member
+Jonathan Ebrahimian
+Nathan Gage
+Edward Jiang
+
 ### If you made the FFT Magnitude Buffer a larger array, would your program still work properly? If yes, why? If not, what would you need to change?
 
 If I made the FFT magnitude buffer larger, the program will still compile with no errors. However, the FFT graph shown on the screen will have a huge flat line since FFT depends on the audio waves. SInce we did not change the audio wave buffer size while increasing the FFT data size by a lot, this will cause many storage wasted and makes users hard to see the FFT of the audio graph above. To fix this disparity, we should make the FFT buffer size the same with the time data(audio wave) in the file or 1/2 size of the time data in the file. This should fix the disparity on screen. 
