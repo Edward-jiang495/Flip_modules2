@@ -1,9 +1,9 @@
 # Flip_modules2
 
 ## Team Member
-Jonathan Ebrahimian
-Nathan Gage
-Edward Jiang
+Jonathan Ebrahimian  
+Nathan Gage  
+Edward Jiang  
 
 ### If you made the FFT Magnitude Buffer a larger array, would your program still work properly? If yes, why? If not, what would you need to change?
 
