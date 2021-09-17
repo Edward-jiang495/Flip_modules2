@@ -28,32 +28,44 @@ class AudioModel {
         twentyData = Array.init(repeating: 0.0, count: 20)
     }
     
-    // public function for starting processing of microphone data
-    func startMicrophoneProcessing(withFps:Double){
-        // setup the microphone to copy to circualr buffer
-        if let manager = self.audioManager{
-            manager.inputBlock = self.handleMicrophone
-            
-            // repeat this fps times per second using the timer class
-            //   every time this is called, we update the arrays "timeData" and "fftData"
-            Timer.scheduledTimer(timeInterval: 1.0/withFps, target: self,
-                                 selector: #selector(self.runEveryInterval),
-                                 userInfo: nil,
-                                 repeats: true)
+//    // public function for starting processing of microphone data
+//    func startMicrophoneProcessing(withFps:Double){
+//        // setup the microphone to copy to circualr buffer
+//        if let manager = self.audioManager{
+//            manager.inputBlock = self.handleMicrophone
+//
+//            // repeat this fps times per second using the timer class
+//            //   every time this is called, we update the arrays "timeData" and "fftData"
+//            Timer.scheduledTimer(timeInterval: 1.0/withFps, target: self,
+//                                 selector: #selector(self.runEveryInterval),
+//                                 userInfo: nil,
+//                                 repeats: true)
+//        }
+//    }
+    
+    func startProcesingAudioFileForPlayback(){
+        // set the output block to read from and play the audio file
+        if let manager = self.audioManager,
+           let fileReader = self.fileReader{
+            manager.outputBlock = self.handleSpeakerQueryWithAudioFile
+            fileReader.play()
+            Timer.scheduledTimer(timeInterval: 0.05, target: self,
+                                             selector: #selector(self.runEveryInterval),
+                                             userInfo: nil,
+                                             repeats: true)
         }
     }
     
+    
+    // You must call this when you want the audio to start being handled by our model
     func play(){
-        if let manager = self.audioManager{
-            manager.inputBlock = self.handleMicrophone
-            manager.play()
-        }
+        self.audioManager?.play()
     }
     
     func pause() {
         if let manager = self.audioManager {
             manager.pause()
-            manager.inputBlock = nil
+            manager.outputBlock = nil
         }
     }
     
@@ -71,6 +83,18 @@ class AudioModel {
     private lazy var inputBuffer:CircularBuffer? = {
         return CircularBuffer.init(numChannels: Int64(self.audioManager!.numInputChannels),
                                    andBufferSize: Int64(BUFFER_SIZE))
+    }()
+    
+    private lazy var fileReader:AudioFileReader? = {
+        if let url = Bundle.main.url(forResource: "satisfaction", withExtension: "mp3"){
+            var tmpFileReader:AudioFileReader? = AudioFileReader.init(audioFileURL: url, samplingRate: Float(audioManager!.samplingRate), numChannels: audioManager!.numOutputChannels)
+            tmpFileReader!.currentTime = 0.0
+            print("Audio file succesfully loaded for \(url)");
+            return tmpFileReader;
+        }else{
+            print("Could not initialze audio input file")
+            return nil;
+        }
     }()
     
     
@@ -108,13 +132,24 @@ class AudioModel {
             print(self.twentyData)
         }
     }
-    
+//
+//    //==========================================
+//    // MARK: Audiocard Callbacks
+//    // in obj-C it was (^InputBlock)(float *data, UInt32 numFrames, UInt32 numChannels)
+//    // and in swift this translates to:
+//    private func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
+//        // copy samples from the microphone into circular buffer
+//        self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
+//    }
+//
     //==========================================
     // MARK: Audiocard Callbacks
     // in obj-C it was (^InputBlock)(float *data, UInt32 numFrames, UInt32 numChannels)
     // and in swift this translates to:
-    private func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
-        // copy samples from the microphone into circular buffer
-        self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
+    private func handleSpeakerQueryWithAudioFile(data:Optional<UnsafeMutablePointer<Float>>,numFrames:UInt32,numChannels:UInt32){
+        if let file = self.fileReader {
+            file.retrieveFreshAudio(data, numFrames: numFrames, numChannels: numChannels);
+            self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames));
+        }
     }
 }
