@@ -119,17 +119,20 @@ class AudioModel {
             
             let windowSize = self.fftData.count / 20
             for index in 0...19 {
-                var sum:Float = 0
-                var count:Float = 0
-
-                for fttIndex in (index * windowSize)...((index + 1) * windowSize)
+                var max:Float = self.fftData[index * windowSize]
+                
+                for fftIndex in (index * windowSize)...((index + 1) * windowSize)
                 {
-                    sum += self.fftData[fttIndex]
-                    count += 1
+                    if self.fftData[fftIndex] > max
+                    {
+                        max = self.fftData[fftIndex]
+                    }
                 }
 
-                self.twentyData[index] = sum / count
+                self.twentyData[index] = max
             }
+            
+            
         }
     }
 //
