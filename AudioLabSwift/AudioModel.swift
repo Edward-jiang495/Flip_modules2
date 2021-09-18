@@ -91,21 +91,21 @@ class AudioModel {
             fftHelper!.performForwardFFT(withData: &timeData,
                                          andCopydBMagnitudeToBuffer: &fftData)
             
+//            self.twentyData = Array(self.fftData[0..<20])
+            
             let windowSize = self.fftData.count / 20
             for index in 0...19 {
                 var sum:Float = 0
                 var count:Float = 0
-                
+
                 for fttIndex in (index * windowSize)...((index + 1) * windowSize)
                 {
                     sum += self.fftData[fttIndex]
                     count += 1
                 }
-                
+
                 self.twentyData[index] = sum / count
             }
-            
-            print(self.twentyData)
         }
     }
     

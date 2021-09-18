@@ -31,6 +31,10 @@ class ViewController: UIViewController {
         
         
         // add in graphs for display
+        graph?.addGraph(withName: "twenty",
+                        shouldNormalize: true,
+                        numPointsInGraph: 20)
+        
         graph?.addGraph(withName: "fft",
                         shouldNormalize: true,
                         numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE/2)
@@ -38,10 +42,6 @@ class ViewController: UIViewController {
         graph?.addGraph(withName: "time",
                         shouldNormalize: false,
                         numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE)
-        
-        graph?.addGraph(withName: "twenty",
-                        shouldNormalize: false,
-                        numPointsInGraph: 20)
         
         // start up the audio model here, querying microphone
         audio.startMicrophoneProcessing(withFps: 10)
@@ -70,6 +70,11 @@ class ViewController: UIViewController {
     @objc
     func updateGraph(){
         self.graph?.updateGraph(
+            data: self.audio.twentyData,
+            forKey: "twenty"
+        )
+        
+        self.graph?.updateGraph(
             data: self.audio.fftData,
             forKey: "fft"
         )
@@ -77,11 +82,6 @@ class ViewController: UIViewController {
         self.graph?.updateGraph(
             data: self.audio.timeData,
             forKey: "time"
-        )
-        
-        self.graph?.updateGraph(
-            data: self.audio.twentyData,
-            forKey: "twenty"
         )
     }
 }
