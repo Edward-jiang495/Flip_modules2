@@ -42,9 +42,14 @@ class ViewController: UIViewController {
         graph?.addGraph(withName: "time",
                         shouldNormalize: false,
                         numPointsInGraph: AudioConstants.AUDIO_BUFFER_SIZE)
+    
+        audio.startProcesingAudioFileForPlayback()
+        audio.play()
+//        // start up the audio model here, querying microphone
+//        audio.startMicrophoneProcessing(withFps: 10)
         
-        // start up the audio model here, querying microphone
-        audio.startMicrophoneProcessing(withFps: 10)
+        // just start up the audio model here
+//        audio.startProcesingAudioFileForPlayback()
         
         // run the loop for updating the graph peridocially
         Timer.scheduledTimer(timeInterval: 0.05, target: self,
@@ -56,7 +61,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        print("View appeared!!!")
         audio.play()
     }
     
